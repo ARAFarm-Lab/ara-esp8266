@@ -15,13 +15,13 @@ Usecase usecase;
 
 void setup() {
     Serial.begin(9600);
-
     Serial.println("Initializing Device");
 
     // Initialize pins
     pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(A0, INPUT);
 
-    // Flush all LED
+    // Turn on the LED indicating the device is initializing
     digitalWrite(LED_BUILTIN, LOW);
 
     // Initialize external dependencies
@@ -35,6 +35,8 @@ void setup() {
     // Initialize MQ message handler
     mqttClient.onMessage(handleMQIncomingMessage);
 
+    // Turn off the LED indicating the device is initializing
+    digitalWrite(LED_BUILTIN, HIGH);
     Serial.println("Initialization Success");
 }
 
@@ -54,11 +56,12 @@ void loop() {
         return;
     }
 
+    usecase.readSensor();
     mqttClient.poll();
 }
 
 void connectToMQBroker() {
-    mqttClient.setId(MQ_CLIENT_ID);
+    mqttClient.setId("esp8266-" DEVICE_ID);
     Serial.println("Connecting to MQ Broker");
 
     while (!mqttClient.connect(MQ_SERVER, MQ_PORT)) {
@@ -67,7 +70,7 @@ void connectToMQBroker() {
     }
 
     mqttClient.setKeepAliveInterval(MQ_KEEP_ALIVE_INTERVAL * 1000L);
-    mqttClient.subscribe(MQ_TOPIC, MQ_QOS);
+    mqttClient.subscribe("d-" DEVICE_ID, MQ_QOS);
     Serial.println("Connected to MQ Broker");
 }
 
@@ -84,11 +87,19 @@ void connectToWifi() {
 }
 
 void handleMQIncomingMessage(int messageSize) {
-    String message = "";
+    char* message = new char[messageSize + 1];
+    int index = 0;
     while (mqttClient.available()) {
-        message += (char)mqttClient.read();
+        message[index++] = (char)mqttClient.read();
+    }
+    message[index] = '\0';
+
+    DynamicJsonDocument json(50);
+    DeserializationError error = deserializeJson(json, message);
+    if (error) {
+        Serial.print("Receiving invalid JSON");
+        return;
     }
 
-    Serial.println("Received message: " + message);
-    digitalWrite(LED_BUILTIN, message == "true" ? LOW : HIGH);
+    usecase.doAction(&json);
 }

@@ -15,9 +15,11 @@ class Repository {
     Repository(){};
     Repository(MqttClient* mq) : mq(mq){};
 
-    void PushJSON(DynamicJsonDocument* json) {
-        this->mq->beginMessage(MQ_TOPIC);
-        this->mq->print(serializeJson(*json, Serial));
+    void PushJSON(char* topic, DynamicJsonDocument* json) {
+        String jsonStr;
+        serializeJson(*json, jsonStr);
+        this->mq->beginMessage(topic);
+        this->mq->print(jsonStr);
         this->mq->endMessage();
     };
 };
