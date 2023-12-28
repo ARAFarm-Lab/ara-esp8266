@@ -7,8 +7,9 @@
 
 #include "repository.h"
 
-const int SOIL_MOISTURE_PIN = A0;
-const int SOIL_MOISTURE_INTERVAL_MILLIS = 1000;
+const int PIN_SOIL_MOISTURE = A0;
+const int PIN_RELAY = D0;
+const int SOIL_MOISTURE_INTERVAL_MILLIS = 1000 * 60; // 1 minute
 class Usecase {
    private:
     Repository* repository;
@@ -26,19 +27,24 @@ class Usecase {
         }
 
         this->lastSoilMoistureMillis = millis();
-        int value = analogRead(SOIL_MOISTURE_PIN);
+        int value = analogRead(PIN_SOIL_MOISTURE);
 
         return value;
     }
 
     void handleToggleRelay(DynamicJsonDocument* json) {
-        // TODO: Implement this
+        String relayState = (*json)[1].as<String>();
+        digitalWrite(PIN_RELAY, relayState == "true" ? HIGH : LOW);
     }
 
    public:
     virtual ~Usecase(){};
     Usecase(){};
     Usecase(Repository* repository) : repository(repository) {
+        pinMode(LED_BUILTIN, OUTPUT);
+        pinMode(PIN_RELAY, OUTPUT);
+        pinMode(A0, INPUT);
+
         // Define actions map based on the given first array element of the
         // request
         this->actionsMap[1] = &Usecase::handleToggleRelay;
@@ -47,12 +53,14 @@ class Usecase {
     // doAction will be the entry point of the usecase. It will invoke the
     // executor function based on the given actionType sent from the server.
     void doAction(DynamicJsonDocument* json) {
-        int action = (*json)[0][0].as<int>();
+        Serial.println(json->as<String>());
+        int action = (*json)[0].as<int>();
 
         // If actions is not found, simply fallback to default action
         // Which is to turn on/off the board LED
         if (actionsMap.find(action) == actionsMap.end()) {
-            digitalWrite(LED_BUILTIN, (*json).as<String>() == "true" ? LOW : HIGH);
+            String state = (*json)[1].as<String>();
+            digitalWrite(LED_BUILTIN, state == "true" ? LOW : HIGH);
             return;
         }
 
