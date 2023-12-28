@@ -17,10 +17,6 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Initializing Device");
 
-    // Initialize pins
-    pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(A0, INPUT);
-
     // Turn on the LED indicating the device is initializing
     digitalWrite(LED_BUILTIN, LOW);
 
