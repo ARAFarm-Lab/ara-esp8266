@@ -14,7 +14,7 @@ Repository repository;
 Usecase usecase;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.println("Initializing Device");
 
     // Turn on the LED indicating the device is initializing
@@ -66,7 +66,9 @@ void connectToMQBroker() {
     }
 
     mqttClient.setKeepAliveInterval(MQ_KEEP_ALIVE_INTERVAL * 1000L);
-    mqttClient.subscribe("d-" DEVICE_ID, MQ_QOS);
+    mqttClient.subscribe("d-" DEVICE_ID, MQ_QOS);    // Subscribe to topic that handles device actions
+    mqttClient.subscribe("s-" DEVICE_ID, MQ_QOS);    // Subscribe to topic that handles configuration
+    mqttClient.subscribe("dcs-" DEVICE_ID, MQ_QOS);  // Subscribe to topic that handles configuration
     Serial.println("Connected to MQ Broker");
 }
 
@@ -83,19 +85,20 @@ void connectToWifi() {
 }
 
 void handleMQIncomingMessage(int messageSize) {
+    String topic = mqttClient.messageTopic();
     char* message = new char[messageSize + 1];
+
     int index = 0;
     while (mqttClient.available()) {
         message[index++] = (char)mqttClient.read();
     }
     message[index] = '\0';
 
-    DynamicJsonDocument json(50);
+    DynamicJsonDocument json(256);
     DeserializationError error = deserializeJson(json, message);
     if (error) {
-        Serial.print("Receiving invalid JSON");
         return;
     }
 
-    usecase.doAction(&json);
+    usecase.dispatchMQMessage(topic, &json);
 }
