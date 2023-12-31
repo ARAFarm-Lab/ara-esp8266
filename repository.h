@@ -17,7 +17,9 @@ class Repository {
 
     void PushJSON(char* topic, DynamicJsonDocument* json) {
         String jsonStr;
-        serializeJson(*json, jsonStr);
+        if (json != NULL) {
+            serializeJson(*json, jsonStr);
+        }
         this->mq->beginMessage(topic);
         this->mq->print(jsonStr);
         this->mq->endMessage();
