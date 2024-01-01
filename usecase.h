@@ -36,7 +36,6 @@ class Usecase {
         int action = (*json)[0].as<int>();
 
         if (actionsMap.find(action) == actionsMap.end()) {
-            Serial.println("action not found");
             return;
         }
 
@@ -159,7 +158,7 @@ class Usecase {
         this->actionsMap[ACTION_TYPE_TOGGLE_RELAY] = &Usecase::handleToggleRelay;
 
         // Define configuration actions map based on the given first array element of the request
-        this->actionsMap[CONFIG_TYPE_SOIL_MOISTURE] = &Usecase::updateSoilMoistureSensorConfiguration;
+        this->configurationActionsMap[CONFIG_TYPE_SOIL_MOISTURE] = &Usecase::updateSoilMoistureSensorConfiguration;
     };
 
     void dispatchMQMessage(String topic, DynamicJsonDocument* json) {
