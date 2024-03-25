@@ -52,7 +52,6 @@ void loop() {
         return;
     }
 
-    usecase.readSensor();
     mqttClient.poll();
 }
 
