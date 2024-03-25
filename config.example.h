@@ -11,3 +11,6 @@
 // Wifi Secrets
 #define WIFI_SSID "xxx"
 #define WIFI_PASSWORD "xxxx"
+
+// Device config
+#define DEVICE_ID "1"
