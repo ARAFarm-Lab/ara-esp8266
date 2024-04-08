@@ -67,7 +67,7 @@ void connectToMQBroker() {
     mqttClient.setKeepAliveInterval(MQ_KEEP_ALIVE_INTERVAL * 1000L);
     mqttClient.subscribe("d-" DEVICE_ID, MQ_QOS);    // Subscribe to topic that handles device actions
     mqttClient.subscribe("s-" DEVICE_ID, MQ_QOS);    // Subscribe to topic that handles configuration
-    mqttClient.subscribe("dcs-" DEVICE_ID, MQ_QOS);  // Subscribe to topic that handles configuration
+    mqttClient.subscribe("dcs-" DEVICE_ID, MQ_QOS);  // Subscribe to topic that handles device current state
     Serial.println("Connected to MQ Broker");
 }
 
