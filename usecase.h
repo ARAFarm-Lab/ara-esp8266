@@ -8,8 +8,6 @@
 #include "constants.h"
 #include "repository.h"
 
-const int PIN_SOIL_MOISTURE = A0;
-const int PIN_RELAY = D0;
 class Usecase {
    private:
     Repository* repository;
@@ -34,14 +32,6 @@ class Usecase {
     virtual ~Usecase(){};
     Usecase(){};
     Usecase(Repository* repository) : repository(repository) {
-        pinMode(LED_BUILTIN, OUTPUT);
-        pinMode(PIN_RELAY, OUTPUT);
-        pinMode(A0, INPUT);
-
-        // Flush all the pins
-        digitalWrite(LED_BUILTIN, HIGH);
-        digitalWrite(PIN_RELAY, HIGH);
-
         // Push a request to the server to get the initial state of the device
         // The server will return with another message to update the device
         char topic[] = "device-initial-state-request/" DEVICE_ID;
@@ -62,7 +52,6 @@ class Usecase {
 
         String value = (*json)[1].as<String>();
         digitalWrite(this->actuatorMap[actuatorID], value == "true" ? LOW : HIGH);
-
     }
 
     // this function will be invoked when the device is initialized. It will
@@ -77,7 +66,7 @@ class Usecase {
         JsonArray actuators = (*json)["a"].as<JsonArray>();
         for (JsonArray item : actuators) {
             int pinNumber = item[1];
-            actuatorMap[pinNumber] = item[0];
+            this->actuatorMap[item[0]] = pinNumber;
             pinMode(pinNumber, OUTPUT);
         }
 
