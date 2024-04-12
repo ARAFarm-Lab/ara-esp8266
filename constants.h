@@ -10,7 +10,7 @@ const int CONFIG_TYPE_SOIL_MOISTURE = 1;
 
 // Configuration type for soil moisture
 const int CONFIG_SOIL_MOISTURE_ENABLE = 1;
-const int CONFIG_SOIL_MOISTURE_INTERVAL= 2;
+const int CONFIG_SOIL_MOISTURE_INTERVAL = 2;
 
 
 #endif
