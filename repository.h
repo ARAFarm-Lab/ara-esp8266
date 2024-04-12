@@ -8,22 +8,23 @@
 #include "config.h"
 
 class Repository {
-    MqttClient* mq;
+  MqttClient* mq;
 
-   public:
-    virtual ~Repository(){};
-    Repository(){};
-    Repository(MqttClient* mq) : mq(mq){};
+public:
+  virtual ~Repository(){};
+  Repository(){};
+  Repository(MqttClient* mq)
+    : mq(mq){};
 
-    void PushJSON(char* topic, DynamicJsonDocument* json) {
-        String jsonStr;
-        if (json != NULL) {
-            serializeJson(*json, jsonStr);
-        }
-        this->mq->beginMessage(topic);
-        this->mq->print(jsonStr);
-        this->mq->endMessage();
-    };
+  void PushJSON(char* topic, DynamicJsonDocument* json) {
+    String jsonStr;
+    if (json != NULL) {
+      serializeJson(*json, jsonStr);
+    }
+    this->mq->beginMessage(topic);
+    this->mq->print(jsonStr);
+    this->mq->endMessage();
+  };
 };
 
 #endif
