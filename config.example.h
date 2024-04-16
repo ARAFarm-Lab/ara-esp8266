@@ -5,7 +5,6 @@
 #define MQ_QOS 1
 #define MQ_USERNAME "username"
 #define MQ_PASSWORD "password"
-#define MQ_TOPIC "xxxxx"
 #define MQ_KEEP_ALIVE_INTERVAL 10
 
 // Wifi Secrets
