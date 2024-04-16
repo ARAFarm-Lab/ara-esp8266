@@ -71,7 +71,7 @@ public:
     // Initialize actuator state
     JsonArray states = (*json)["v"].as<JsonArray>();
     for (JsonArray config : states) {
-      digitalWrite(this->actuatorMap[config[0]], config[1]);
+      digitalWrite(this->actuatorMap[config[0]], config[1] == "true" ? LOW : HIGH);
     }
   }
 
